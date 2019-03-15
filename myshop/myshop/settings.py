@@ -1,4 +1,6 @@
 import os
+from django.utils.translation import gettext_lazy as _
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = '6)$$-dt2=yx&ztgd@u6+nm9!$0om08v37aln5gq%ouyus18u51'
@@ -31,6 +33,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+    'django.middleware.locale.LocaleMiddleware',
+
 ]
 
 ROOT_URLCONF = 'myshop.urls'
@@ -79,8 +84,14 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+LANGUAGES = (
+    ('en', _('English')),
+    ('es', _('Spanish')),
+)
 
-LANGUAGE_CODE = 'en-us'
+LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'),)
+
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'UTC'
 
@@ -114,3 +125,8 @@ Configuration.configure(
     BRAINTREE_PUBLIC_KEY,
     BRAINTREE_PRIVATE_KEY
 )
+
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+REDIS_DB = 1
+
