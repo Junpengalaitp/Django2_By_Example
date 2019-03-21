@@ -11,6 +11,7 @@ from django.forms.models import modelform_factory
 from django.apps import apps
 from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
 from django.db.models import Count
+from students.forms import CourseEnrollForm
 
 # class ManageCourseListView(ListView):
 #     model = Course
@@ -100,15 +101,22 @@ class ContentCreateUpdateView(TemplateResponseMixin, View):
         return None
     
     def get_form(self, model, *args, **kwargs):
-        Form = modelform_factory(model, exclude=['owner', 'order', 'created', 'updated'])
+        Form = modelform_factory(model, exclude=['owner',
+                                                 'order',
+                                                 'created',
+                                                 'updated'])
         return Form(*args, **kwargs)
-
+    
     def dispatch(self, request, module_id, model_name, id=None):
-        self.module = get_object_or_404(Module, id=module_id, course__owner=request.user)
+        self.module = get_object_or_404(Module,
+                                        id=module_id, course__owner=request.user)
         self.model = self.get_model(model_name)
         if id:
-            self.obj = get_object_or_404(self.model, id=id, owner=request.user)
-        return super(ContentCreateUpdateView, self).dispatch(request, module_id, model_name, id)
+            self.obj = get_object_or_404(self.model,
+                                            id=id,
+                                            owner=request.user)
+        return super(ContentCreateUpdateView,
+                     self).dispatch(request, module_id, model_name, id)
 
     def get(self, request, module_id, model_name, id=None):
         form = self.get_form(self.model, instance=self.obj)
@@ -187,3 +195,11 @@ class CourseListView(TemplateResponseMixin, View):
 class CourseDetailView(DeleteView):
     model = Course
     template_name = 'courses/course/detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(CourseDetailView, self).get_context_data(**kwargs)
+        context['enroll_form'] = CourseEnrollForm(initial={'course': self.object})
+
+        return context
+
+
